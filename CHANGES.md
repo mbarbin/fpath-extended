@@ -1,6 +1,8 @@
-## unreleased
+## 0.0.1 (2023-11-07)
+
+Initial release.
 
 ### Added
-### Changed
-### Fixed
-### Removed
+
+- Add `hash` and `sexp_of`. This makes `Fpath_extended` compatible with Base
+  Containers such as Map, Set, Hashtbl, etc.
