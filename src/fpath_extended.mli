@@ -9,3 +9,5 @@
     v} *)
 
 type t = Fpath.t [@@deriving compare, equal, hash, sexp_of]
+
+val arg_type : t Command.Arg_type.t
