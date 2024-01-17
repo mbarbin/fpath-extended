@@ -1,7 +1,6 @@
 # fpath-extended
 
 [![CI Status](https://github.com/mbarbin/fpath-extended/workflows/ci/badge.svg)](https://github.com/mbarbin/fpath-extended/actions/workflows/ci.yml)
-[![Deploy odoc Status](https://github.com/mbarbin/fpath-extended/workflows/deploy-odoc/badge.svg)](https://github.com/mbarbin/fpath-extended/actions/workflows/deploy-odoc.yml)
 
 This library adds a few functions to the
 [fpath](https://opam.ocaml.org/packages/fpath/) package to be used by projects
@@ -45,5 +44,5 @@ other repos.
 
 ## Code documentation
 
-The tip of the default branch is compiled with odoc and published to
-GitHub pages [here](https://mbarbin.github.io/fpath-extended/).
+The code documentation of the latest release is built with `odoc` and published
+to `GitHub` pages [here](https://mbarbin.github.io/fpath-extended).
