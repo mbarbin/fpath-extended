@@ -18,7 +18,6 @@
 (package
  (name fpath-extended)
  (synopsis "Adding a few functions to Fpath to use alongside Base")
- (description "Adding a few functions to Fpath to use alongside Base")
  (depends
   (ocaml
    (>= 5.1))
