@@ -1,3 +1,9 @@
+## 0.0.3 (2024-01-18)
+
+### Changed
+
+- Internal changes related to build and release process.
+
 ## 0.0.2 (2023-11-12)
 
 ### Added
