@@ -1,6 +1,7 @@
 # fpath-extended
 
 [![CI Status](https://github.com/mbarbin/fpath-extended/workflows/ci/badge.svg)](https://github.com/mbarbin/fpath-extended/actions/workflows/ci.yml)
+[![Coverage Status](https://coveralls.io/repos/github/mbarbin/fpath-extended/badge.svg?branch=main&service=github)](https://coveralls.io/github/mbarbin/fpath-extended?branch=main)
 
 This library adds a few functions to the
 [fpath](https://opam.ocaml.org/packages/fpath/) package to be used by projects
