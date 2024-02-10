@@ -1,3 +1,19 @@
+## 0.0.5 (unreleased)
+
+### Added
+
+- Add new test && increase coverage.
+
+### Changed
+
+- Couple `hash` with `hash_fold_t` for consistency.
+
+### Deprecated
+
+### Fixed
+
+### Removed
+
 ## 0.0.4 (2024-02-09)
 
 ### Added
