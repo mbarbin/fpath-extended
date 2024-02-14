@@ -1,4 +1,4 @@
-## 0.0.5 (unreleased)
+## 0.0.5 (2024-02-14)
 
 ### Added
 
@@ -9,12 +9,6 @@
 - Upgrade dune to `3.14`.
 - Build the doc with sherlodoc available to enable the doc search bar.
 - Couple `hash` with `hash_fold_t` for consistency.
-
-### Deprecated
-
-### Fixed
-
-### Removed
 
 ## 0.0.4 (2024-02-09)
 
