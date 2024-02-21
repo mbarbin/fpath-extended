@@ -13,6 +13,12 @@ let%expect_test "of_string" =
   ()
 ;;
 
+let%expect_test "v" =
+  require_does_raise [%here] (fun () -> Absolute_path.v "");
+  [%expect {| (Absolute_path.of_string "\"\": invalid path") |}];
+  ()
+;;
+
 let%expect_test "of_fpath" =
   let test_fpath f =
     let t = Absolute_path.of_fpath f in
@@ -44,7 +50,7 @@ let%expect_test "of_fpath" =
         (f' /))) |}];
   test_fpath (Fpath.v "a/relative/path");
   [%expect {| (Error ("Absolute_path.of_fpath: not an absolute path" a/relative/path)) |}];
-  require_does_raise [%here] (fun () -> test_fpath (Fpath.v ""));
+  require_does_raise [%here] (fun () -> Fpath.v "");
   [%expect {| (Invalid_argument "\"\": invalid path") |}];
   ()
 ;;
@@ -201,6 +207,34 @@ let%expect_test "chop_suffix" =
   in
   test (abs "/foo/bar") (rel "bar");
   [%expect {| (Ok /foo) |}];
+  test (abs "/foo/bar/") (rel "bar");
+  [%expect
+    {|
+    (Error (
+      "Absolute_path.chop_suffix: not a suffix" (
+        (t      /foo/bar/)
+        (suffix bar)))) |}];
+  test (abs "/foo/bar/") (rel "bar/");
+  [%expect {| (Ok /foo) |}];
+  test (abs "/foo/bar") (rel ".");
+  [%expect
+    {|
+    (Error (
+      "Absolute_path.chop_suffix: not a suffix" (
+        (t      /foo/bar)
+        (suffix ./)))) |}];
+  test (abs "/foo/bar/") (rel ".");
+  [%expect {|
+    (Error (
+      "Absolute_path.chop_suffix: not a suffix" (
+        (t      /foo/bar/)
+        (suffix ./)))) |}];
+  test (abs "/foo/bar/.") (rel ".");
+  [%expect {|
+    (Error (
+      "Absolute_path.chop_suffix: not a suffix" (
+        (t      /foo/bar/)
+        (suffix ./)))) |}];
   test (abs "/foo/bar") (rel "bar/");
   [%expect
     {|

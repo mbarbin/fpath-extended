@@ -54,6 +54,9 @@ module Relative_path : sig
   (** The empty relative path ["."]. *)
   val dot : t
 
+  (** The current directory ["./"]. *)
+  val dot_slash : t
+
   val append : t -> t -> t
   val extend : t -> File_name.t -> t
   val parent : t -> t option
@@ -82,10 +85,10 @@ module Classified_path : sig
   (** [v str] is [of_string str |> Or_error.ok_exn]. *)
   val v : string -> t
 
-  (** [Absolute Absolute.root], aka ["/"]. *)
+  (** [Absolute Absolute_path.root], aka ["/"]. *)
   val root : t
 
-  (** [Relative Relative.dot], aka ["."]. *)
+  (** [Relative Relative_path.dot], aka ["."]. *)
   val dot : t
 
   (** Relocate p2, if it is relative, to p1. If p2 is absolute, just ignore p1 and

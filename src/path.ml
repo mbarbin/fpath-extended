@@ -25,16 +25,13 @@ let chop_prefix ~module_name ~prefix t =
 
 let chop_suffix ~module_name ~empty t ~suffix =
   let suffix = Fpath.to_string suffix in
-  if String.equal "." suffix
-  then Ok t
-  else (
-    match String.chop_suffix (Fpath.to_string t) ~suffix:(Fpath.dir_sep ^ suffix) with
-    | Some t -> Ok (if String.is_empty t then empty else t |> Fpath.v)
-    | None ->
-      Or_error.error_s
-        [%sexp
-          (Printf.sprintf "%s.chop_suffix: not a suffix" module_name : string)
-          , { t : Fpath0.t; suffix : string }])
+  match String.chop_suffix (Fpath.to_string t) ~suffix:(Fpath.dir_sep ^ suffix) with
+  | Some t -> Ok (if String.is_empty t then empty else t |> Fpath.v)
+  | None ->
+    Or_error.error_s
+      [%sexp
+        (Printf.sprintf "%s.chop_suffix: not a suffix" module_name : string)
+        , { t : Fpath0.t; suffix : string }]
 ;;
 
 module Absolute_path = struct
@@ -93,6 +90,7 @@ module Relative_path = struct
 
   let v str = str |> of_string |> Or_error.ok_exn
   let dot = Fpath.v "."
+  let dot_slash = Fpath.v "./"
   let append = append
   let extend = extend
   let parent = parent

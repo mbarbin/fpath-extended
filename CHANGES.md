@@ -2,8 +2,9 @@
 
 ### Added
 
-- Added new modules `Absolute_path`, `Relative_path` to distinguish absolute
+- Add new modules `Absolute_path`, `Relative_path` to distinguish absolute
   from relative path at the type level.
+- Add new tests.
 
 ### Changed
 

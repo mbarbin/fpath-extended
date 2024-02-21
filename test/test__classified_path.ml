@@ -41,9 +41,7 @@ let%expect_test "chop_prefix and chop_suffix" =
             , (b : Absolute_path.t)
             , "==> chop_prefix"
             , (Absolute_path.chop_prefix ~prefix:a b : Relative_path.t Hide_error.t)]
-      | Relative _, Absolute _ ->
-        raise_s
-          [%sexp "invalid arguments", (a : Classified_path.t), (b : Classified_path.t)]
+      | Relative _, Absolute _ -> assert false
       | Absolute a, Relative b ->
         print_s
           [%sexp
@@ -108,6 +106,12 @@ let%expect_test "chop_prefix and chop_suffix" =
   ()
 ;;
 
+let%expect_test "v" =
+  require_does_raise [%here] (fun () -> Classified_path.v "");
+  [%expect {| (Classified_path.of_string "\"\": invalid path") |}];
+  ()
+;;
+
 let%expect_test "of_fpath" =
   let test_fpath f =
     let t = Classified_path.of_fpath f in
@@ -163,7 +167,7 @@ let%expect_test "of_fpath" =
   [%expect {|
     ./
     ("does roundtrip" ((f ./))) |}];
-  require_does_raise [%here] (fun () -> test_fpath (Fpath.v ""));
+  require_does_raise [%here] (fun () -> Fpath.v "");
   [%expect {| (Invalid_argument "\"\": invalid path") |}];
   ()
 ;;

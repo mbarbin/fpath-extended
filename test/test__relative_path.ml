@@ -13,6 +13,12 @@ let%expect_test "of_string" =
   ()
 ;;
 
+let%expect_test "v" =
+  require_does_raise [%here] (fun () -> Relative_path.v "");
+  [%expect {| (Relative_path.of_string "\"\": invalid path") |}];
+  ()
+;;
+
 let%expect_test "of_fpath" =
   let test_fpath f =
     let t = Relative_path.of_fpath f in
@@ -52,6 +58,30 @@ let%expect_test "of_fpath" =
 let%expect_test "append" =
   let rel str = str |> Relative_path.v in
   let test a b = print_s [%sexp (Relative_path.append a b : Relative_path.t)] in
+  test (rel ".") Relative_path.dot;
+  [%expect {| ./ |}];
+  test (rel "./") Relative_path.dot;
+  [%expect {| ./ |}];
+  test (rel ".") Relative_path.dot_slash;
+  [%expect {| ./ |}];
+  test (rel "./") Relative_path.dot_slash;
+  [%expect {| ./ |}];
+  test (rel "./a") Relative_path.dot;
+  [%expect {| a/ |}];
+  test (rel "./a/") Relative_path.dot;
+  [%expect {| a/ |}];
+  test (rel "./a") Relative_path.dot_slash;
+  [%expect {| a/ |}];
+  test (rel "./a/") Relative_path.dot_slash;
+  [%expect {| a/ |}];
+  test (rel "a") Relative_path.dot;
+  [%expect {| a/ |}];
+  test (rel "a/") Relative_path.dot;
+  [%expect {| a/ |}];
+  test (rel "a") Relative_path.dot_slash;
+  [%expect {| a/ |}];
+  test (rel "a/") Relative_path.dot_slash;
+  [%expect {| a/ |}];
   test (rel "a/b") (rel "c/d");
   [%expect {| a/b/c/d |}];
   test (rel "a/b") (rel "c/d/");
@@ -224,6 +254,36 @@ let%expect_test "chop_suffix" =
   in
   test (rel "foo/bar") (rel "bar");
   [%expect {| (Ok foo) |}];
+  test (rel "foo/bar/") (rel "bar");
+  [%expect
+    {|
+    (Error (
+      "Relative_path.chop_suffix: not a suffix" (
+        (t      foo/bar/)
+        (suffix bar)))) |}];
+  test (rel "foo/bar/") (rel "bar/");
+  [%expect {| (Ok foo) |}];
+  test (rel "foo/bar") (rel ".");
+  [%expect
+    {|
+    (Error (
+      "Relative_path.chop_suffix: not a suffix" (
+        (t      foo/bar)
+        (suffix ./)))) |}];
+  test (rel "foo/bar/") (rel ".");
+  [%expect
+    {|
+    (Error (
+      "Relative_path.chop_suffix: not a suffix" (
+        (t      foo/bar/)
+        (suffix ./)))) |}];
+  test (rel "foo/bar/.") (rel ".");
+  [%expect
+    {|
+    (Error (
+      "Relative_path.chop_suffix: not a suffix" (
+        (t      foo/bar/)
+        (suffix ./)))) |}];
   test (rel "foo/bar") (rel "baz");
   [%expect
     {|
