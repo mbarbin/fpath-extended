@@ -29,10 +29,6 @@
    (and
     :dev
     (>= 2.8.3)))
-  (core
-   (and
-    (>= v0.16)
-    (< v0.17)))
   (expect_test_helpers_core
    (and
     :with-test

@@ -1,3 +1,20 @@
+## 0.0.6 (unreleased)
+
+### Added
+
+### Changed
+
+- Design the package now so that it is meant to be open.
+- Override the `Fpath` in the scope, so you can use e.g. `Fpath.sexp_of_t` directly.
+
+### Deprecated
+
+### Fixed
+
+### Removed
+
+- Remove `Arg_type` and dependency into `core.command`. To be revisited.
+
 ## 0.0.5 (2024-02-14)
 
 ### Added

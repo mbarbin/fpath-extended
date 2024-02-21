@@ -1,7 +1,7 @@
 let%expect_test "hashtbl" =
-  let t = Hashtbl.create (module Fpath_extended) in
+  let t = Hashtbl.create (module Fpath) in
   Hashtbl.set t ~key:(Fpath.v "my-file") ~data:42;
-  print_s [%sexp (t : int Hashtbl.M(Fpath_extended).t)];
+  print_s [%sexp (t : int Hashtbl.M(Fpath).t)];
   [%expect {| ((my-file 42)) |}]
 ;;
 
@@ -13,8 +13,8 @@ module Fpath_pair : sig
   [@@deriving compare, hash, sexp_of]
 end = struct
   type t =
-    { a : Fpath_extended.t
-    ; b : Fpath_extended.t
+    { a : Fpath.t
+    ; b : Fpath.t
     }
   [@@deriving compare, hash, sexp_of]
 end

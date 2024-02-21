@@ -9,7 +9,9 @@
   -open
   Base
   -open
-  Expect_test_helpers_base)
+  Expect_test_helpers_base
+  -open
+  Fpath_extended)
  (libraries
   base
   expect_test_helpers_core.expect_test_helpers_base

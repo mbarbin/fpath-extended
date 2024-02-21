@@ -1,13 +1,6 @@
-(** Adding a few functions to FPath to use alongside Base.
-
-    - sexp serializer
-    - enough for compatibility with Base style containers, such as:
-
-    {v
-  let hashtbl = Hashtbl.create (module Fpath_extended) in
-  ...
-    v} *)
-
-type t = Fpath.t [@@deriving compare, equal, hash, sexp_of]
-
-val arg_type : t Command.Arg_type.t
+module Fpath : sig
+  include module type of struct
+    include Fpath
+    include Fpath0
+  end
+end
