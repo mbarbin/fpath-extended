@@ -3,23 +3,25 @@
 [![CI Status](https://github.com/mbarbin/fpath-extended/workflows/ci/badge.svg)](https://github.com/mbarbin/fpath-extended/actions/workflows/ci.yml)
 [![Coverage Status](https://coveralls.io/repos/github/mbarbin/fpath-extended/badge.svg?branch=main)](https://coveralls.io/github/mbarbin/fpath-extended?branch=main)
 
-This library adds a few functions to the
+This library extends the functionality offered by the
 [fpath](https://opam.ocaml.org/packages/fpath/) package to be used by projects
 using [base](https://opam.ocaml.org/packages/base/).
 
-## Usage
+Specifically, it adds the following `ppx` to the main `Fpath.t` type as follows:
 
-The intended usage is to refer to the module `Fpath_extended` alongside `Fpath`
-for the needed bits, and keep on simply using `Fpath` as usual when no extended
-functionality is required.
+```ocaml
+type t = Fpath.t [@@deriving compare, equal, hash, sexp_of]
 
-For example, Fpath_extended adds a sexp serializer and hash functions to
-`Fpath.t`, thus allowing for example:
+include Comparable.S with type t := t
+```
+
+thus allowing for example:
 
 ```ocaml file=example.ml
 open! Base
+open! Fpath_extended
 
-let create_fpath_hashtbl () = Hashtbl.create (module Fpath_extended)
+let create_fpath_table () = Hashtbl.create (module Fpath)
 ```
 
 and in the mli
@@ -30,20 +32,41 @@ open! Base
 val create_fpath_hashtbl : unit -> _ Hashtbl.M(Fpath).t
 ```
 
+The package also defines modules to distinguish between absolute and relative
+path at the type level (`Absolute_path.t` & `Relative_path.t`).
+
+## Usage
+
+The intended usage is to open the module `Fpath_extended`, and keep on simply
+using `Fpath` as usual.
+
 ## Motivations
 
-This experimental package is not meant to be published to the opam repository,
-nor is it meant for public consumption.
-
-Really, I've just used this package as an excuse to toy with opam and experiment
-with some ways extension packages may be designed and distributed.
-
-The repo itself is public so that I can publish its releases into my personal
-[opam-repository](https://github.com/mbarbin/opam-repository), install them in
-my local opam switches and refer to these packages from the workflow actions of
-other repos.
+This package started as a personal experiment. Perhaps it will grow into
+something that I would consider submitting to the opam repository. TBD.
 
 ## Code documentation
 
 The code documentation of the latest release is built with `odoc` and published
 to `GitHub` pages [here](https://mbarbin.github.io/fpath-extended).
+
+## Acknowledgements
+
+We would also like to express our gratitude to Daniel Bünzli and the fpath
+developers for the original `fpath` package, which this project extends. The
+implementation of `Absolute_path` and `Relative_path` is based on functionality
+from the `Fpath` module. We greatly appreciate Daniel's contribution to the open
+source community and the foundational work they provided, which has been
+instrumental in the development of this project.
+
+We would also like to acknowledge the `Path` module from Jane Street's Iron code
+review system, which we took inspiration from during the development of the
+module `Path` in this project. Specifically, we were inspired by their idea of
+distinguishing between absolute and relative paths at the type level. While we
+did not reuse any of the implementation from the original `Path` module, the
+general concepts and some function names are similar due to the nature of the
+file path operations we are performing (such as `extend` and `concat` for
+extending and concatenating paths, etc.). We appreciate the work done by the
+Jane Street team and their contribution to the open source community. Their
+project is licensed under the Apache License version 2.0, which can be found
+[here](https://github.com/janestreet/iron).

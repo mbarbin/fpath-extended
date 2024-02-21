@@ -2,6 +2,9 @@
 
 ### Added
 
+- Added new modules `Absolute_path`, `Relative_path` to distinguish absolute
+  from relative path at the type level.
+
 ### Changed
 
 - Design the package now so that it is meant to be open.
