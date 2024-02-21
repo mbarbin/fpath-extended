@@ -1,4 +1,4 @@
-## 0.0.6 (unreleased)
+## 0.0.6 (2024-02-21)
 
 ### Added
 
@@ -9,10 +9,6 @@
 
 - Design the package now so that it is meant to be open.
 - Override the `Fpath` in the scope, so you can use e.g. `Fpath.sexp_of_t` directly.
-
-### Deprecated
-
-### Fixed
 
 ### Removed
 
