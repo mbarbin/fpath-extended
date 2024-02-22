@@ -56,31 +56,27 @@ let%expect_test "of_fpath" =
 ;;
 
 let%expect_test "append" =
-  let rel str = str |> Relative_path.v in
+  let rel = Relative_path.v in
   let test a b = print_s [%sexp (Relative_path.append a b : Relative_path.t)] in
-  test (rel ".") Relative_path.dot;
+  test Relative_path.empty Relative_path.empty;
   [%expect {| ./ |}];
-  test (rel "./") Relative_path.dot;
+  test Relative_path.empty Relative_path.empty;
   [%expect {| ./ |}];
-  test (rel ".") Relative_path.dot_slash;
-  [%expect {| ./ |}];
-  test (rel "./") Relative_path.dot_slash;
-  [%expect {| ./ |}];
-  test (rel "./a") Relative_path.dot;
+  test (rel "./a") Relative_path.empty;
   [%expect {| a/ |}];
-  test (rel "./a/") Relative_path.dot;
+  test (rel "./a/") Relative_path.empty;
   [%expect {| a/ |}];
-  test (rel "./a") Relative_path.dot_slash;
+  test (rel "a") Relative_path.empty;
   [%expect {| a/ |}];
-  test (rel "./a/") Relative_path.dot_slash;
+  test (rel "a/") Relative_path.empty;
   [%expect {| a/ |}];
-  test (rel "a") Relative_path.dot;
+  test Relative_path.empty (rel "./a");
+  [%expect {| a |}];
+  test Relative_path.empty (rel "./a/");
   [%expect {| a/ |}];
-  test (rel "a/") Relative_path.dot;
-  [%expect {| a/ |}];
-  test (rel "a") Relative_path.dot_slash;
-  [%expect {| a/ |}];
-  test (rel "a/") Relative_path.dot_slash;
+  test Relative_path.empty (rel "a");
+  [%expect {| a |}];
+  test Relative_path.empty (rel "a/");
   [%expect {| a/ |}];
   test (rel "a/b") (rel "c/d");
   [%expect {| a/b/c/d |}];
@@ -88,7 +84,7 @@ let%expect_test "append" =
   [%expect {| a/b/c/d/ |}];
   test (rel "a/b/") (rel "c/d");
   [%expect {| a/b/c/d |}];
-  test (rel ".") (rel "a/b/c");
+  test Relative_path.empty (rel "a/b/c");
   [%expect {| a/b/c |}];
   test (rel "./a/b/../c/.") (rel "d/e");
   [%expect {| a/c/d/e |}];
@@ -108,16 +104,16 @@ let%expect_test "append" =
 ;;
 
 let%expect_test "extend" =
-  let rel str = str |> Relative_path.v in
+  let rel = Relative_path.v in
   let file str = str |> File_name.v in
   let test a b = print_s [%sexp (Relative_path.extend a b : Relative_path.t)] in
   require_does_raise [%here] (fun () : File_name.t -> file "a/b");
   [%expect {| ("File_name.of_string: invalid file name" a/b) |}];
   require_does_not_raise [%here] (fun () -> ignore (file ".." : File_name.t));
   [%expect {| |}];
-  test (rel ".") (file "a");
+  test Relative_path.empty (file "a");
   [%expect {| a |}];
-  test Relative_path.dot (file ".a");
+  test Relative_path.empty (file ".a");
   [%expect {| .a |}];
   test (rel "a") (file "b");
   [%expect {| a/b |}];
@@ -141,7 +137,7 @@ let%expect_test "extend" =
 ;;
 
 let%expect_test "parent" =
-  let rel str = str |> Relative_path.v in
+  let rel = Relative_path.v in
   let test path =
     let result = Relative_path.parent path in
     print_s [%sexp (result : Relative_path.t option)]
@@ -152,10 +148,8 @@ let%expect_test "parent" =
   [%expect {| (foo/) |}];
   test (rel "foo");
   [%expect {| (./) |}];
-  test (rel ".");
-  [%expect {| () |}];
-  test (rel "./");
-  [%expect {| () |}];
+  test Relative_path.empty;
+  [%expect {| (./../) |}];
   ()
 ;;
 
@@ -165,7 +159,7 @@ let%expect_test "of_list" =
     print_s [%sexp (result : Relative_path.t)]
   in
   test [];
-  [%expect {| . |}];
+  [%expect {| ./ |}];
   test [ "a" ];
   [%expect {| a |}];
   test [ "." ];
@@ -184,13 +178,19 @@ let%expect_test "of_list" =
 ;;
 
 let%expect_test "chop_prefix" =
-  let rel str = str |> Relative_path.v in
+  let rel = Relative_path.v in
   let test prefix path =
     let result = Relative_path.chop_prefix ~prefix path in
     print_s [%sexp (result : Relative_path.t Or_error.t)]
   in
   test (rel "foo") (rel "foo/bar");
   [%expect {| (Ok bar) |}];
+  test (rel "foo") (rel "foo/bar/");
+  [%expect {| (Ok bar/) |}];
+  test (rel "foo/") (rel "foo/bar");
+  [%expect {| (Ok bar) |}];
+  test (rel "foo/") (rel "foo/bar/");
+  [%expect {| (Ok bar/) |}];
   test (rel "foo/") (rel "foo");
   [%expect
     {|
@@ -247,13 +247,20 @@ let%expect_test "chop_prefix" =
 ;;
 
 let%expect_test "chop_suffix" =
-  let rel str = str |> Relative_path.v in
+  let rel = Relative_path.v in
   let test path suffix =
     let result = Relative_path.chop_suffix path ~suffix in
     print_s [%sexp (result : Relative_path.t Or_error.t)]
   in
   test (rel "foo/bar") (rel "bar");
   [%expect {| (Ok foo) |}];
+  test (rel "foo/bar") (rel "bar/");
+  [%expect
+    {|
+    (Error (
+      "Relative_path.chop_suffix: not a suffix" (
+        (t      foo/bar)
+        (suffix bar/)))) |}];
   test (rel "foo/bar/") (rel "bar");
   [%expect
     {|
@@ -263,21 +270,21 @@ let%expect_test "chop_suffix" =
         (suffix bar)))) |}];
   test (rel "foo/bar/") (rel "bar/");
   [%expect {| (Ok foo) |}];
-  test (rel "foo/bar") (rel ".");
+  test (rel "foo/bar") Relative_path.empty;
   [%expect
     {|
     (Error (
       "Relative_path.chop_suffix: not a suffix" (
         (t      foo/bar)
         (suffix ./)))) |}];
-  test (rel "foo/bar/") (rel ".");
+  test (rel "foo/bar/") Relative_path.empty;
   [%expect
     {|
     (Error (
       "Relative_path.chop_suffix: not a suffix" (
         (t      foo/bar/)
         (suffix ./)))) |}];
-  test (rel "foo/bar/.") (rel ".");
+  test (rel "foo/bar/.") Relative_path.empty;
   [%expect
     {|
     (Error (
@@ -300,7 +307,7 @@ let%expect_test "chop_suffix" =
       "Relative_path.chop_suffix: not a suffix" (
         (t      foo/bar/baz)
         (suffix baz/qux)))) |}];
-  test (rel "foo/bar/baz") (rel ".");
+  test (rel "foo/bar/baz") Relative_path.empty;
   [%expect
     {|
     (Error (
@@ -324,5 +331,39 @@ let%expect_test "chop_suffix" =
       "Relative_path.chop_suffix: not a suffix" (
         (t      foo/bar-baz)
         (suffix -baz)))) |}];
+  ()
+;;
+
+let%expect_test "is_dir_path" =
+  let rel = Relative_path.v in
+  let test path = print_s [%sexp (Relative_path.is_dir_path (rel path) : bool)] in
+  test "foo/bar";
+  [%expect {| false |}];
+  test "foo/bar/";
+  [%expect {| true |}];
+  test "foo/bar/../baz/../foo/";
+  [%expect {| true |}];
+  test "foo";
+  [%expect {| false |}];
+  test "./";
+  [%expect {| true |}];
+  ()
+;;
+
+let%expect_test "to_dir_path" =
+  let rel = Relative_path.v in
+  let test path =
+    print_s [%sexp (Relative_path.to_dir_path (rel path) : Relative_path.t)]
+  in
+  test "foo/bar";
+  [%expect {| foo/bar/ |}];
+  test "foo/bar/";
+  [%expect {| foo/bar/ |}];
+  test "foo/bar/../baz/../foo/";
+  [%expect {| foo/foo/ |}];
+  test "foo";
+  [%expect {| foo/ |}];
+  test "./";
+  [%expect {| ./ |}];
   ()
 ;;

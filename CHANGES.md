@@ -1,3 +1,19 @@
+## 0.0.7 (2024-02-22)
+
+### Added
+
+- Add `Fpath.classify` to dispatch between absolute and relative paths.
+
+### Changed
+
+- Clarify use of empty relative paths.
+- Make behavior closer to `Fpath`'s "directoryness" when able.
+
+### Removed
+
+- Removed `Classified_path`.
+- Removed `Relative_path.{dot,dot_slash}`. Replaced by `Relative_path.empty`.
+
 ## 0.0.6 (2024-02-21)
 
 ### Added

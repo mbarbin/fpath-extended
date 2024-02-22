@@ -56,8 +56,8 @@ let%expect_test "of_fpath" =
 ;;
 
 let%expect_test "append" =
-  let abs str = str |> Absolute_path.v in
-  let rel str = str |> Relative_path.v in
+  let abs = Absolute_path.v in
+  let rel = Relative_path.v in
   let test a b = print_s [%sexp (Absolute_path.append a b : Absolute_path.t)] in
   test (abs "/a") (rel "b");
   [%expect {| /a/b |}];
@@ -85,7 +85,7 @@ let%expect_test "append" =
 ;;
 
 let%expect_test "extend" =
-  let abs str = str |> Absolute_path.v in
+  let abs = Absolute_path.v in
   let file str = str |> File_name.v in
   let test a b = print_s [%sexp (Absolute_path.extend a b : Absolute_path.t)] in
   require_does_raise [%here] (fun () : File_name.t -> file "a/b");
@@ -114,7 +114,7 @@ let%expect_test "extend" =
 ;;
 
 let%expect_test "parent" =
-  let abs str = str |> Absolute_path.v in
+  let abs = Absolute_path.v in
   let test path =
     let result = Absolute_path.parent path in
     print_s [%sexp (result : Absolute_path.t option)]
@@ -135,7 +135,7 @@ let%expect_test "parent" =
 ;;
 
 let%expect_test "chop_prefix" =
-  let abs str = str |> Absolute_path.v in
+  let abs = Absolute_path.v in
   let test prefix path =
     let result = Absolute_path.chop_prefix ~prefix path in
     print_s [%sexp (result : Relative_path.t Or_error.t)]
@@ -144,12 +144,16 @@ let%expect_test "chop_prefix" =
   [%expect {| (Ok bar) |}];
   test (abs "/foo/") (abs "/foo/bar");
   [%expect {| (Ok bar) |}];
+  test (abs "/foo") (abs "/foo/bar/");
+  [%expect {| (Ok bar/) |}];
+  test (abs "/foo/") (abs "/foo/bar/");
+  [%expect {| (Ok bar/) |}];
   test (abs "/foo/") (abs "/foo/");
-  [%expect {| (Ok .) |}];
+  [%expect {| (Ok ./) |}];
   test (abs "/foo") (abs "/foo/");
   [%expect {| (Ok ./) |}];
   test (abs "/foo") (abs "/foo");
-  [%expect {| (Ok .) |}];
+  [%expect {| (Ok ./) |}];
   test (abs "/foo/") (abs "/foo");
   [%expect
     {|
@@ -199,14 +203,21 @@ let%expect_test "chop_prefix" =
 ;;
 
 let%expect_test "chop_suffix" =
-  let abs str = str |> Absolute_path.v in
-  let rel str = str |> Relative_path.v in
+  let abs = Absolute_path.v in
+  let rel = Relative_path.v in
   let test path suffix =
     let result = Absolute_path.chop_suffix path ~suffix in
     print_s [%sexp (result : Absolute_path.t Or_error.t)]
   in
   test (abs "/foo/bar") (rel "bar");
   [%expect {| (Ok /foo) |}];
+  test (abs "/foo/bar") (rel "bar/");
+  [%expect
+    {|
+    (Error (
+      "Absolute_path.chop_suffix: not a suffix" (
+        (t      /foo/bar)
+        (suffix bar/)))) |}];
   test (abs "/foo/bar/") (rel "bar");
   [%expect
     {|
@@ -314,5 +325,60 @@ let%expect_test "chop_suffix" =
       "Absolute_path.chop_suffix: not a suffix" (
         (t      /foo/bar-baz)
         (suffix -baz)))) |}];
+  ()
+;;
+
+let%expect_test "is_dir_path" =
+  let abs = Absolute_path.v in
+  let test path = print_s [%sexp (Absolute_path.is_dir_path (abs path) : bool)] in
+  test "/foo/bar";
+  [%expect {| false |}];
+  test "/foo/bar/";
+  [%expect {| true |}];
+  test "/foo/bar/../baz/../foo/";
+  [%expect {| true |}];
+  test "/foo";
+  [%expect {| false |}];
+  test "/";
+  [%expect {| true |}];
+  test "/.";
+  [%expect {| true |}];
+  ()
+;;
+
+let%expect_test "to_dir_path" =
+  let abs = Absolute_path.v in
+  let test path =
+    print_s [%sexp (Absolute_path.to_dir_path (abs path) : Absolute_path.t)]
+  in
+  test "/foo/bar";
+  [%expect {| /foo/bar/ |}];
+  test "/foo/bar/";
+  [%expect {| /foo/bar/ |}];
+  test "/foo/bar/../baz/../foo/";
+  [%expect {| /foo/foo/ |}];
+  test "/foo";
+  [%expect {| /foo/ |}];
+  test "/";
+  [%expect {| / |}];
+  test "/.";
+  [%expect {| / |}];
+  ()
+;;
+
+let%expect_test "relativize" =
+  let v str = str |> Fpath.v in
+  let abs = Absolute_path.v in
+  let test ~root b =
+    print_endline (Absolute_path.relativize ~root b |> Absolute_path.to_string)
+  in
+  test ~root:(abs "/a/b") (v "/");
+  [%expect {| / |}];
+  test ~root:(abs "/a/b") (v ".");
+  [%expect {| /a/b/ |}];
+  test ~root:(abs "/a/b") (v "../foo/bar");
+  [%expect {| /a/foo/bar |}];
+  test ~root:(abs "/") (v "../foo/bar");
+  [%expect {| /foo/bar |}];
   ()
 ;;
