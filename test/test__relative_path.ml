@@ -292,7 +292,8 @@ let%expect_test "chop_suffix" =
         (t      foo/bar/)
         (suffix ./)))) |}];
   test (rel "bar") (rel "foo/bar");
-  [%expect {|
+  [%expect
+    {|
     (Error (
       "Relative_path.chop_suffix: not a suffix" (
         (t      bar)

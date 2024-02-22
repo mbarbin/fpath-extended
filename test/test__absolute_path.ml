@@ -249,7 +249,8 @@ let%expect_test "chop_suffix" =
         (t      /foo/bar/)
         (suffix ./)))) |}];
   test (abs "/bar") (rel "foo/bar");
-  [%expect {|
+  [%expect
+    {|
     (Error (
       "Absolute_path.chop_suffix: not a suffix" (
         (t      /bar)
