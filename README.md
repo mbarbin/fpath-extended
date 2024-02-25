@@ -52,15 +52,16 @@ to `GitHub` pages [here](https://mbarbin.github.io/fpath-extended).
 
 ## Acknowledgements
 
-We would also like to express our gratitude to Daniel Bünzli and the fpath
-developers for the original `fpath` package, which this project extends. The
-implementation of `Absolute_path` and `Relative_path` is based on functionality
-from the `Fpath` module. We greatly appreciate Daniel's contribution to the open
-source community and the foundational work they provided, which has been
-instrumental in the development of this project.
+We would like to thank to Daniel Bünzli and the fpath programmers for the
+original `fpath` package, which this project extends. The implementation of
+`Absolute_path` and `Relative_path` is based on functionality from the `Fpath`
+module. We greatly appreciate Daniel's contribution to the open source community
+and the foundational work they provided, which has been instrumental in the
+development of this project. `Fpath`'s copyright and permission notice are
+included at the root of this project, in the file `LICENSE.fpath`.
 
 We would also like to acknowledge the `Path` module from Jane Street's Iron code
-review system, which we took inspiration from during the development of the
+review system, which we took some inspiration from during the development of the
 module `Path` in this project. Specifically, we were inspired by their idea of
 distinguishing between absolute and relative paths at the type level. While we
 did not reuse any of the implementation from the original `Path` module, the
