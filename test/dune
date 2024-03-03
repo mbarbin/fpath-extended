@@ -9,14 +9,10 @@
   -open
   Base
   -open
-  Expect_test_helpers_base
+  Expect_test_helpers
   -open
   Fpath_extended)
- (libraries
-  base
-  expect_test_helpers_core.expect_test_helpers_base
-  fpath
-  fpath_extended)
+ (libraries base expect-test-helpers fpath fpath_extended)
  (inline_tests)
  (instrumentation
   (backend bisect_ppx))
